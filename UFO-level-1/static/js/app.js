@@ -60,33 +60,44 @@ function buildTable(tableData) {
 
 // Selecting the "Filter Table" button
 var button = d3.select("#filter-btn");
+var filterData = {};
 
 // Complete the click handler for page
-button.on("click", function() {
+function updateFilters() {
     // Preventing page from Refreshing
     // d3.event.preventDefault();
 
     // Selecting the input element and get raw HTML node
-    var inputElement = d3.select("#datetime");
-
+    var inputElement = d3.select(this).select("input");
+    
     // Getting value property of input element
     var inputValue = inputElement.property("value");
+    var filterID = inputElement.attr("id");
+
+    // Checking for values
+    if (inputValue){
+        filterData[filterID]= inputValue;
+    }
+    else {
+        delete filterData[filterID];
+    }
+    filterTable();
+};
+
+// UFO LEVEL II
+function filterTable(){
     let filteredData = tableData;
-    console.log(inputValue);
-    console.log(tableData);
 
     // Using form input to filter data by date
-    if(inputValue) {
-        filteredData = tableData.filter(row => row.datetime === inputValue);
-    }
+    Object.entries(filterData).forEach(([key, value]) => {
+        filteredData = filteredData.filter(row => row[key] === value);
+    });
+        
     buildTable(filteredData);
 
     console.log(filteredData);
+};
 
-});
-
-// UFO LEVEL II
-
-
+d3.selectAll(".filter").on("change",updateFilters);
 buildTable(tableData);
 
